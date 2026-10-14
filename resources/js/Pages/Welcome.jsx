@@ -33,15 +33,13 @@ export default function Welcome({ auth }) {
                             <>
                                 <Link
                                     href={route("login")}
-                                    className="rounded-full px-5 py-2.5 text-white font-medium hover:bg-white/10 transition"
+                                    className="rounded-full px-5 py-2.5 text-white border border-white/30 font-medium hover:bg-white/10 transition"
                                 >
                                     Log in
                                 </Link>
                                 <Link
                                     href={route("register")}
-                                    className="rounded-full px-6 py-2.5 bg-blue text-[#0f172a] font-semibold transition-all duration-300 
-            hover:brightness-125 hover:scale-105 
-            hover:shadow-[0_0_25px_-5px] hover:shadow-[#D552A3]"
+                                    className="rounded-full text-white font-semibold px-6 py-2.5 border border-white/30 hover:bg-white/10 transition"
                                 >
                                     Daftar Gratis
                                 </Link>
@@ -60,7 +58,7 @@ export default function Welcome({ auth }) {
                             className="mx-auto mb-10 w-80 md:w-96"
                         /> */}
 
-                        <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
+                        <h1 className="text-5xl md:text-6xl font-bold text-green mb-6 tracking-tight">
                             Feed Your Mind
                         </h1>
 
@@ -69,14 +67,18 @@ export default function Welcome({ auth }) {
                             pengalaman
                             <br />
                             berbasis teks yang sederhana dan bermakna.
+                            <span className="text-sm text-slate-400">
+                                bertemu teman baru, berbagi ide, dan membangun
+                                komunitas!
+                            </span>
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link
                                 href={route("register")}
                                 className="px-8 py-4 rounded-full bg-green transition-all duration-300 
-            hover:brightness-125 hover:scale-105 
-            hover:shadow-[0_0_25px_-5px] hover:shadow-[#A4DD00] text-[#0f172a] font-semibold transition"
+             hover:scale-105  
+             hover:shadow-[#A4DD00]  font-semibold transition"
                             >
                                 Mulai Menulis Sekarang
                             </Link>
@@ -93,33 +95,35 @@ export default function Welcome({ auth }) {
 
                 {/* Simple Features */}
                 <div
-                    className="py-16 px-6 border-t border-white/10"
-                    style={{ backgroundColor: "#313647" }}
+                    className="py-16 px-6 border-t border-white/10 bg-green/85 "
+                    id="learn-more"
                 >
                     <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-8 text-center">
                         <div className="p-6">
-                            <h3 className="text-2xl font-semibold text-white mb-3">
+                            <h3 className="text-2xl font-semibold text-warm-black mb-3">
                                 Tulis Bebas
                             </h3>
-                            <p className="text-slate-400">
+                            <p className="text-warm-black">
                                 Bagikan title, deskripsi, dan isi konten teks
                                 tanpa batas.
                             </p>
                         </div>
-                        <div className="p-6">
-                            <h3 className="text-2xl font-semibold text-white mb-3">
+
+                        <div className="p-6 border-t border-white/20 md:border-t-0">
+                            <h3 className="text-2xl font-semibold text-warm-black mb-3">
                                 Interaksi
                             </h3>
-                            <p className="text-slate-400">
+                            <p className="text-warm-black">
                                 Like, komentar, dan terhubung dengan pemikiran
                                 orang lain.
                             </p>
                         </div>
-                        <div className="p-6">
-                            <h3 className="text-2xl font-semibold text-white mb-3">
+
+                        <div className="p-6 border-t border-white/20 md:border-t-0">
+                            <h3 className="text-2xl font-semibold text-warm-black mb-3">
                                 Komunitas
                             </h3>
-                            <p className="text-slate-400">
+                            <p className="text-warm-black">
                                 Bangun komunitas berdasarkan ide dan minat yang
                                 sama.
                             </p>

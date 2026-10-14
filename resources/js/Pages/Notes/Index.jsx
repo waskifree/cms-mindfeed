@@ -1,6 +1,7 @@
 import React from "react";
 import { Head, usePage, Link } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import RelativeTime from "@/Components/RelativeTime";
 
 export default function Index() {
     const { auth, contents = [] } = usePage().props;
@@ -49,9 +50,9 @@ export default function Index() {
                                         </span>
 
                                         <span className="text-xs text-gray-500">
-                                            {new Date(
-                                                content.created_at,
-                                            ).toLocaleDateString("id-ID")}
+                                            <RelativeTime
+                                                date={content.created_at}
+                                            />
                                         </span>
                                     </div>
 

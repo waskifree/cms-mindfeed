@@ -42,20 +42,20 @@ export default function Register() {
                             className="mx-auto w-52 mb-6"
                         /> */}
 
-                        <h1 className="text-3xl font-bold text-white">
+                        <h1 className="text-3xl font-bold text-green">
                             Register
                         </h1>
-                        <p className="text-slate-400 mt-2">
+                        <p className="text-slate-200 text-sm mt-2">
                             Daftar akun MindFeed kamu
                         </p>
                     </div>
                 </div>
             </div>
 
-            <form onSubmit={submit} className="text-white">
+            <form onSubmit={submit}>
                 <div>
                     <InputLabel
-                        className="text-white"
+                        className="text-slate-300"
                         htmlFor="name"
                         value="Name"
                     />
@@ -64,7 +64,7 @@ export default function Register() {
                         id="name"
                         name="name"
                         value={data.name}
-                        className="mt-1 block w-full bg-[#222831] border-slate-700 text-white focus:border-[#A4DD00] focus:ring-[#A4DD00]"
+                        className="mt-1 block w-full bg-[#222831] border-slate-700 text-slate-300 focus:border-green focus:ring-green"
                         autoComplete="name"
                         isFocused={true}
                         onChange={(e) => setData("name", e.target.value)}
@@ -75,7 +75,7 @@ export default function Register() {
                 </div>
                 <div className="mt-2">
                     <InputLabel
-                        className="text-white"
+                        className="text-slate-300"
                         htmlFor="username"
                         value="Username"
                     />
@@ -84,7 +84,7 @@ export default function Register() {
                         id="username"
                         name="username"
                         value={data.username}
-                        className="mt-1 block w-full bg-[#222831] border-slate-700 text-white focus:border-[#A4DD00] focus:ring-[#A4DD00]"
+                        className="mt-1 block w-full bg-[#222831] border-slate-700 text-slate-300 focus:border-green focus:ring-green"
                         autoComplete="username"
                         isFocused={true}
                         onChange={(e) => setData("username", e.target.value)}
@@ -96,7 +96,7 @@ export default function Register() {
 
                 <div className="mt-2">
                     <InputLabel
-                        className="text-white"
+                        className="text-slate-300"
                         htmlFor="email"
                         value="Email"
                     />
@@ -106,7 +106,7 @@ export default function Register() {
                         type="email"
                         name="email"
                         value={data.email}
-                        className="mt-1 block w-full bg-[#222831] border-slate-700 text-white focus:border-[#A4DD00] focus:ring-[#A4DD00]"
+                        className="mt-1 block w-full bg-[#222831] border-slate-700 text-slate-300 focus:border-green focus:ring-green"
                         autoComplete="username"
                         onChange={(e) => setData("email", e.target.value)}
                         required
@@ -117,7 +117,7 @@ export default function Register() {
 
                 <div className="mt-2">
                     <InputLabel
-                        className="text-white"
+                        className="text-slate-300"
                         htmlFor="password"
                         value="Password"
                     />
@@ -128,7 +128,7 @@ export default function Register() {
                             type={showPassword ? "text" : "password"}
                             name="password"
                             value={data.password}
-                            className="mt-1 block w-full bg-[#222831] border-slate-700 text-white focus:border-[#A4DD00] focus:ring-[#A4DD00] pr-10"
+                            className="mt-1 block w-full bg-[#222831] border-slate-700 text-slate-300 focus:border-green focus:ring-green pr-10"
                             autoComplete="new-password"
                             onChange={(e) =>
                                 setData("password", e.target.value)
@@ -140,7 +140,7 @@ export default function Register() {
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors"
                         >
                             {showPassword ? (
                                 <EyeOff size={20} />
@@ -155,7 +155,7 @@ export default function Register() {
 
                 <div className="mt-2">
                     <InputLabel
-                        className="text-white"
+                        className="text-slate-300"
                         htmlFor="password_confirmation"
                         value="Confirm Password"
                     />
@@ -166,7 +166,7 @@ export default function Register() {
                             type={showPasswordConfirm ? "text" : "password"}
                             name="password_confirmation"
                             value={data.password_confirmation}
-                            className="mt-1 block w-full bg-[#222831] border-slate-700 text-white focus:border-[#A4DD00] focus:ring-[#A4DD00] pr-10"
+                            className="mt-1 block w-full bg-[#222831] border-slate-700 text-slate-300 focus:border-green focus:ring-green pr-10"
                             autoComplete="new-password"
                             onChange={(e) =>
                                 setData("password_confirmation", e.target.value)
@@ -180,7 +180,7 @@ export default function Register() {
                             onClick={() =>
                                 setShowPasswordConfirm(!showPasswordConfirm)
                             }
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors"
                         >
                             {showPasswordConfirm ? (
                                 <EyeOff size={20} />
@@ -199,7 +199,7 @@ export default function Register() {
                 <div className="mt-6 flex items-center justify-end">
                     <Link
                         href={route("login")}
-                        className="rounded-md text-sm text-slate-400 hover:brightness-125"
+                        className="rounded-md text-sm text-slate-400 hover:brightness-150 transition"
                     >
                         Already registered?
                     </Link>

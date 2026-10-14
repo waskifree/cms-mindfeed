@@ -27,21 +27,49 @@ class HandleInertiaRequests extends Middleware
      *
      * @return array<string, mixed>
      */
-    public function share(Request $request): array
-    {
-        return [
-            ...parent::share($request),
-            'auth' => [
-                'user' => $request->user() ? [
-                    'id' => $request->user()->id,
-                    'name' => $request->user()->name,
-                    'username' => $request->user()->username,
-                    'email' => $request->user()->email,
-                    'roles' => $request->user()->getRoleNames(),        // ← Tambahkan ini
-                    'isAdmin' => $request->user()->hasRole('admin')
-                ]: null,
-                
-            ],
-        ];
+   public function share(Request $request): array
+{
+    $user = $request->user();
+
+    $authUser = null;
+
+    if ($user) {
+        try {
+            $roles = method_exists($user, 'getRoleNames')
+                ? $user->getRoleNames()->toArray()
+                : [];
+
+            $isAdmin = method_exists($user, 'hasRole')
+                ? $user->hasRole('admin')
+                : false;
+
+            $authUser = [
+                'id'               => $user->id,
+                'name'             => $user->name,
+                'email'            => $user->email,
+                'username'         => $user->username,
+                'avatar'           => $user->avatar,
+                'bio'              => $user->bio,
+                'roles'            => $roles,
+                'isAdmin'          => $isAdmin,
+                'from_middleware'  => true,
+                'has_roles_trait'  => method_exists($user, 'getRoleNames'),
+            ];
+        } catch (\Throwable $e) {
+            $authUser = [
+                'id'              => $user->id,
+                'name'            => $user->name,
+                'error'           => $e->getMessage(),
+                'from_middleware' => true,
+            ];
+        }
     }
+
+    return [
+        ...parent::share($request),
+        'auth' => [
+            'user' => $authUser,
+        ],
+    ];
+}
 }

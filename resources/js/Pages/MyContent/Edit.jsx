@@ -105,7 +105,7 @@ export default function Edit({ content, categories }) {
                                 onChange={(e) =>
                                     setData("title", e.target.value)
                                 }
-                                className="w-full bg-gray-950 border border-gray-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 text-white rounded-2xl px-6 py-4 transition-all placeholder-gray-400"
+                                className="w-full bg-gray-900 border border-gray-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 text-white rounded-2xl px-6 py-4 transition-all placeholder-gray-400"
                                 placeholder="Masukkan judul konten..."
                             />
                             {errors.title && (
@@ -125,7 +125,7 @@ export default function Edit({ content, categories }) {
                                 onChange={(e) =>
                                     setData("description", e.target.value)
                                 }
-                                className="w-full bg-gray-950 border border-gray-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 text-white rounded-2xl px-6 py-4 h-28 transition-all placeholder-gray-400"
+                                className="w-full bg-gray-900 border border-gray-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 text-white rounded-2xl px-6 py-4 h-28 transition-all placeholder-gray-400"
                                 placeholder="Deskripsi singkat tentang konten..."
                             />
                             {errors.description && (
@@ -145,7 +145,7 @@ export default function Edit({ content, categories }) {
                                 onChange={(e) =>
                                     setData("paragraph", e.target.value)
                                 }
-                                className="w-full bg-gray-950 border border-gray-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 text-white rounded-2xl px-6 py-4 h-64 transition-all placeholder-gray-400"
+                                className="w-full bg-gray-900 border border-gray-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 text-white rounded-2xl px-6 py-4 h-64 transition-all placeholder-gray-400"
                                 placeholder="Tulis isi konten lengkap di sini..."
                             />
                             {errors.paragraph && (
@@ -165,7 +165,7 @@ export default function Edit({ content, categories }) {
                                 onChange={(e) =>
                                     setData("category_id", e.target.value)
                                 }
-                                className="w-full bg-gray-950 border border-gray-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 text-white rounded-2xl px-6 py-4 transition-all"
+                                className="w-full bg-gray-900 border border-gray-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 text-white rounded-2xl px-6 py-4 transition-all"
                             >
                                 {categories.map((cat) => (
                                     <option key={cat.id} value={cat.id}>

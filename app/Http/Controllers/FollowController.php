@@ -10,7 +10,7 @@ class FollowController extends Controller
 {
     public function follow(User $user)
     {
-        $follower = Auth::user();   // Pakai Facade Auth
+        $follower = Auth::user();
 
         if (!$follower) {
             return redirect()->route('login');
@@ -38,31 +38,37 @@ class FollowController extends Controller
         return back()->with('success', 'Berhenti mengikuti ' . $user->name);
     }
 
-    // Versi API (rekomendasi untuk Inertia/React)
+    /**
+     * Toggle follow (cocok untuk Inertia)
+     */
     public function toggleFollow(User $user)
     {
         $follower = Auth::user();
 
         if (!$follower) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return redirect()->route('login');
         }
 
         if ($follower->id === $user->id) {
-            return response()->json(['error' => 'Cannot follow yourself'], 400);
+            return back()->with('error', 'Tidak bisa follow diri sendiri');
         }
 
         $isFollowing = $follower->isFollowing($user);
 
         if ($isFollowing) {
             $follower->following()->detach($user->id);
+            $message = 'Berhenti mengikuti ' . $user->name;
         } else {
             $follower->following()->attach($user->id);
+            $message = 'Berhasil mengikuti ' . $user->name;
         }
 
+        // Reload count biar data di frontend ikut update
         $user->loadCount('followers');
 
-        return response()->json([
-            'success' => true,
+        return back()->with([
+            'success' => $message,
+            // optional: kirim data terbaru kalau mau dipakai di frontend
             'is_following' => !$isFollowing,
             'followers_count' => $user->followers_count,
         ]);

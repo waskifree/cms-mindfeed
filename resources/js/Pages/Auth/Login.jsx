@@ -37,10 +37,10 @@ export default function Login({ status, canResetPassword }) {
                             className="mx-auto w-52 mb-6"
                         /> */}
 
-                        <h1 className="text-2xl font-bold text-white">
+                        <h1 className="text-2xl font-bold text-green">
                             Selamat Datang Kembali
                         </h1>
-                        <p className="text-slate-400 mt-2">
+                        <p className="text-slate-200 text-sm mt-2">
                             Masuk ke akun MindFeed kamu
                         </p>
                     </div>
@@ -63,7 +63,7 @@ export default function Login({ status, canResetPassword }) {
                                 type="text"
                                 name="username"
                                 value={data.username}
-                                className="mt-1 block w-full bg-[#222831] border-slate-700 text-white focus:border-[#A4DD00] focus:ring-[#A4DD00]"
+                                className="mt-1 block w-full bg-[#222831] border-slate-700 text-slate-300 focus:border-green focus:ring-green"
                                 autoComplete="username"
                                 isFocused={true}
                                 onChange={(e) =>
@@ -89,7 +89,7 @@ export default function Login({ status, canResetPassword }) {
                                     type={showPassword ? "text" : "password"}
                                     name="password"
                                     value={data.password}
-                                    className="mt-1 block w-full bg-[#222831] border-slate-700 text-white focus:border-[#A4DD00] focus:ring-[#A4DD00] pr-10"
+                                    className="mt-1 block w-full bg-[#222831] border-slate-700 text-slate-300 focus:border-green focus:ring-green pr-10"
                                     autoComplete="current-password"
                                     onChange={(e) =>
                                         setData("password", e.target.value)
@@ -121,6 +121,7 @@ export default function Login({ status, canResetPassword }) {
                         <div className="flex items-center justify-between">
                             <label className="flex items-center text-slate-300">
                                 <Checkbox
+                                    className="rounded border-slate-900 text-green focus:ring-green"
                                     name="remember"
                                     checked={data.remember}
                                     onChange={(e) =>
@@ -133,7 +134,7 @@ export default function Login({ status, canResetPassword }) {
                             {canResetPassword && (
                                 <Link
                                     href={route("password.request")}
-                                    className="text-sm text-slate-400 hover:brightness-125 transition"
+                                    className="text-sm text-slate-400 hover:brightness-150 transition"
                                 >
                                     Lupa password?
                                 </Link>
@@ -147,13 +148,12 @@ export default function Login({ status, canResetPassword }) {
                             {processing ? "Memproses..." : "Masuk"}
                         </PrimaryButton>
 
-                        <div className="text-center text-slate-400 hover:brightness-125 text-sm">
-                            Belum punya akun?{" "}
+                        <div className="text-center text-slate-400 hover:brightness-150 transition text-sm">
                             <Link
                                 href={route("register")}
                                 className="text-blue-100 hover:text-blue-200  font-medium"
                             >
-                                Daftar sekarang
+                                Belum punya akun? Daftar sekarang
                             </Link>
                         </div>
                     </form>

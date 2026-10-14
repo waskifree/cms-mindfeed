@@ -3,183 +3,243 @@
 namespace App\Http\Controllers;
 
 use App\Models\Content;
-use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Models\Comment;
+use App\Models\CommentLike;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ContentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+   public function index(Request $request)
     {
-        $contents = Content::with('user', 'category')->latest()->get();
+        $search = $request->get('search');
+        $viewer = Auth::user();
+
+        $contents = Content::query()
+            ->visibleTo($viewer) // hormati visibility
+            ->with([
+                'user:id,name,username,avatar',
+                'category',
+                'comments' => function ($q) {
+                    $q->whereNull('parent_id')
+                        ->with([
+                            'user:id,name,username,avatar',
+                            'replies' => function ($r) {
+                                $r->with('user:id,name,username,avatar')
+                                    ->withCount('likes')
+                                    ->latest();
+                            },
+                        ])
+                        ->withCount('likes')
+                        ->latest();
+                },
+            ])
+            ->withCount('likes')
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('paragraph', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->get()
+            ->map(function ($content) {
+                $content->is_liked = $content->likes()
+                    ->where('user_id', Auth::id())
+                    ->exists();
+                return $content;
+            });
 
         return Inertia::render('Content/Index', [
-            'contents' => $contents,
-            'categories' => Category::all()
+            'contents'   => $contents,
+            'categories' => Category::all(),
+            'filters'    => [
+                'search' => $search,
+            ],
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        $categories = Category::all();
         return Inertia::render('Content/Create', [
-            'categories' => $categories
+            'categories' => Category::all(),
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-
         $request->validate([
-            'title' => 'required|string|max:255',
-            'category_id' => 'nullable|exists:categories,id',
-            'visibility' => 'required|in:public,followers,private',
-            'description' => 'nullable|string',
-            'paragraph' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
-            'type' => 'required|string|in:video,text,quiz,pdf',
+            'title'        => 'required|string|max:255',
+            'category_id'  => 'nullable|exists:categories,id',
+            'visibility'   => 'required|in:public,followers,private',
+            'description'  => 'nullable|string',
+            'paragraph'    => 'nullable|string',
+            'image'        => 'nullable|image|max:2048',
+            'type'         => 'required|string|in:video,text,quiz,pdf',
             'is_published' => 'boolean',
-            'order' => 'integer',
+            'order'        => 'integer',
         ]);
 
-        $content = new Content();
-        $content->title = $request->title;
-        $content->category_id = $request->category_id;
-        $content->visibility = $request->visibility;
-        $content->description = $request->description;
-        $content->paragraph = $request->paragraph;
-        $content->created_by = Auth::id();
-        $content->type = $request->type;
-        $content->is_published = $request->is_published ?? false;
-        $content->order = $request->order ?? 0;
+        
+        $content               = new Content();
+        $content->title        = $request->title;
+        $content->category_id  = $request->category_id;
+        $content->visibility   = $request->visibility;
+        $content->description  = $request->description;
+        $content->paragraph    = $request->paragraph;
+        $content->created_by   = Auth::id();
+        $content->type         = $request->type;
+        $content->is_published = $request->boolean('is_published');
+        $content->order        = $request->order ?? 0;
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('public/images');
-            $content->image = basename($path);
+            $path = $request->file('image')->store('images', 'public');
+            $content->image = $path;
         }
 
         $content->save();
 
-        return redirect()->route('content.index')->with('success', 'Content created successfully.');
+        return redirect()
+            ->route('content.index')
+            ->with('success', 'Content created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-   public function show($slug)
-{
-    $content = Content::where('slug', $slug)->with('user', 'category', 'comments.user')->firstOrFail();
-    
-    return Inertia::render('Content/Show', [
-        'content' => $content
-    ]);
-}
+   
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Content $content)
     {
-        $categories = Category::all();
+        $content->load('category');
+
         return Inertia::render('Content/Edit', [
-        'contents' => $content,
-        'categories' => $categories
-    ]);
+            'content' => $content,
+            'categories' => Category::orderBy('name')->get(),
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Content $content)
     {
-        
         $request->validate([
-        'title'       => 'required|string|max:255',
-        'visibility'  => 'required|in:public,followers,private',
-        'description' => 'nullable|string',
-        'paragraph'   => 'required|string',
-        'category_id' => 'nullable|exists:categories,id',
-    ]);
+            'title'       => 'required|string|max:255',
+            'visibility'  => 'required|in:public,followers,private',
+            'description' => 'nullable|string',
+            'paragraph'   => 'required|string',
+            'category_id' => 'nullable|exists:categories,id',
+        ]);
 
+        $content->title       = $request->title;
+        $content->visibility  = $request->visibility;
+        $content->category_id = $request->category_id;
+        $content->description = $request->description;
+        $content->paragraph   = $request->paragraph;
+        $content->save();
 
-    $content->title = $request->title;
-    $content->visibility = $request->visibility;
-    $content->category_id = $request->category_id;
-    $content->description = $request->description;
-    $content->paragraph = $request->paragraph;
-    $content->save();
-
-    return redirect()->route('content.index')
-                     ->with('success', 'Konten berhasil diupdate!');
+        return redirect()
+            ->route('content.index')
+            ->with('success', 'Konten berhasil diupdate!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Content $content)
     {
-        
-    // hapus gambar jika ada
-    if ($content->image && Storage::exists($content->image)) {
-        Storage::delete($content->image);
-    }
+        if ($content->image && Storage::disk('public')->exists($content->image)) {
+            Storage::disk('public')->delete($content->image);
+        }
 
-    // hapus data content
-    $content->forceDelete();
+        $content->forceDelete();
 
-    return redirect()->back()->with('success', 'Konten berhasil dihapus');
+        return redirect()->back()->with('success', 'Konten berhasil dihapus');
     }
 
     /**
- * Toggle Like
- */
-public function like(Content $content)
-{
-    $userId = Auth::id();
+     * Toggle Like Post
+     */
+    public function like(Content $content)
+    {
+        $userId = Auth::id();
+        $existingLike = $content->likes()->where('user_id', $userId)->first();
 
-    // Cek apakah user sudah like konten ini
-    $existingLike = $content->likes()->where('user_id', $userId)->first();
+        if ($existingLike) {
+            $existingLike->delete();
+            $content->decrement('likes');
+        } else {
+            $content->likes()->create(['user_id' => $userId]);
+            $content->increment('likes');
+        }
 
-    if ($existingLike) {
-        // Jika sudah like, hapus like tersebut (unlike)
-        $existingLike->delete();
-        $content->decrement('likes');
-        return back()->with('success', 'Anda telah membatalkan like pada konten ini.');
-    } else {
-        // Jika belum like, buat like baru
-        $content->likes()->create(['user_id' => $userId]);
-        $content->increment('likes');
-        return back()->with('success', 'Anda telah menyukai konten ini.');
+        return back();
     }
-}
 
-/**
- * Simpan Komentar
- */
-public function comment(Request $request, Content $content)
-{
-    $request->validate([
-        'comment' => 'required|string|max:500',
-    ]);
-    
-    $content->comments()->create([
-        'user_id' => Auth::id(),
-        'comment' => $request->comment,
-    ]);
+    /**
+     * Simpan Komentar / Reply
+     */
+    public function comment(Request $request, Content $content)
+    {
+        $request->validate([
+            'comment'   => 'required|string|max:500',
+            'parent_id' => 'nullable|exists:comments,id',
+        ]);
 
-    return back()->with('success', 'Komentar berhasil ditambahkan');
-}
+        if ($request->parent_id) {
+            Comment::where('id', $request->parent_id)
+                ->where('content_id', $content->id)
+                ->firstOrFail();
+        }
 
-    
+        $content->comments()->create([
+            'user_id'   => Auth::id(),
+            'parent_id' => $request->parent_id,
+            'comment'   => $request->comment,
+        ]);
+
+        return back()->with('success', 'Komentar berhasil ditambahkan');
+    }
+
+    /**
+     * Like / Unlike Comment
+     */
+    public function likeComment(Content $content, Comment $comment)
+    {
+        if ($comment->content_id !== $content->id) {
+            abort(404);
+        }
+
+        $existing = CommentLike::where('user_id', Auth::id())
+            ->where('comment_id', $comment->id)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+        } else {
+            CommentLike::create([
+                'user_id'    => Auth::id(),
+                'comment_id' => $comment->id,
+            ]);
+        }
+
+        return back();
+    }
+
+    /**
+     * Hapus Comment
+     */
+    public function destroyComment(Content $content, Comment $comment)
+    {
+        if ($comment->content_id !== $content->id) {
+            abort(404);
+        }
+
+        $isCommentOwner = $comment->user_id === Auth::id();
+        $isContentOwner = $content->created_by === Auth::id();
+
+        if (!$isCommentOwner && !$isContentOwner) {
+            abort(403);
+        }
+
+        $comment->delete();
+
+        return back()->with('success', 'Komentar dihapus');
+    }
 }

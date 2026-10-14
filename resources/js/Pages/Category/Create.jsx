@@ -1,16 +1,14 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/react";
-import { usePage, Link, router } from "@inertiajs/react";
-import { useForm } from "@inertiajs/react";
+import { Head, Link, useForm } from "@inertiajs/react";
 
-export default function Create({}) {
+export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
         name: "",
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route("category.store"), { forceFormData: true });
+        post(route("category.store"));
     };
 
     return (
@@ -18,18 +16,22 @@ export default function Create({}) {
             <Head title="Tambah Kategori" />
 
             <div className="py-6">
-                <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
-                    <h2 className="text-2xl font-bold mb-6">
-                        Tambah Kategori Baru
-                    </h2>
+                <div className="max-w-2xl mx-auto sm:px-6 lg:px-8">
+                    <div className="mb-8">
+                        <h2 className="text-2xl font-bold text-white">
+                            Tambah Kategori Baru
+                        </h2>
+                        <p className="text-gray-400 text-sm mt-1">
+                            Buat kategori untuk mengelompokkan konten
+                        </p>
+                    </div>
 
                     <form
                         onSubmit={handleSubmit}
-                        className="bg-white shadow-sm rounded-lg p-6"
+                        className="bg-[#1E2937] border border-gray-700 rounded-2xl p-6 sm:p-8 space-y-6"
                     >
-                        {/* Name */}
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium mb-1">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
                                 Nama Kategori
                             </label>
                             <input
@@ -38,26 +40,30 @@ export default function Create({}) {
                                 onChange={(e) =>
                                     setData("name", e.target.value)
                                 }
-                                className="w-full border rounded-lg px-4 py-2"
+                                placeholder="Contoh: Teknologi, Lifestyle, ..."
+                                className="w-full bg-[#0f172a] border border-gray-600 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-500 transition"
                             />
                             {errors.name && (
-                                <p className="text-red-500 text-sm">
+                                <p className="text-red-400 text-sm mt-2">
                                     {errors.name}
                                 </p>
                             )}
                         </div>
 
-                        <div className="flex gap-4 mt-6">
+                        <div className="flex flex-wrap gap-3 pt-2">
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-medium transition disabled:opacity-50"
                             >
-                                Simpan Kategori
+                                {processing
+                                    ? "Menyimpan..."
+                                    : "Simpan Kategori"}
                             </button>
+
                             <Link
-                                href="/category"
-                                className="bg-gray-300 px-6 py-3 rounded-lg hover:bg-gray-400"
+                                href={route("category.index")}
+                                className="bg-slate-700 hover:bg-slate-600 text-white px-6 py-3 rounded-xl font-medium transition"
                             >
                                 Batal
                             </Link>

@@ -1,53 +1,75 @@
-import { Link, usePage } from "@inertiajs/react";
+import { Head, usePage, Link } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { useState, useEffect } from "react";
 import GoBack from "@/Components/goBack";
+import UserListItem from "@/Components/UserListItem";
 
 export default function Followers() {
     const { user, followers } = usePage().props;
+
+    // Ambil data dengan aman
+    const list = followers?.data ?? followers ?? [];
+    const hasData = Array.isArray(list) && list.length > 0;
+
     return (
         <AuthenticatedLayout>
-            <h2 className="text-2xl font-semibold text-gray-200 mb-6">
-                Followers
-            </h2>
-            <GoBack />
-            {followers && followers.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                    {followers.map((follower) => (
-                        <Link
-                            key={follower.id}
-                            href={`/profile/${follower.username}`}
-                            className="flex items-center gap-4 bg-warm-black border border-gray-700 hover:border-gray-600 rounded-xl p-4 transition"
-                        >
-                            <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 flex-shrink-0">
-                                {follower.avatar ? (
-                                    <img
-                                        src={`/storage/${follower.avatar}`}
-                                        alt={follower.name}
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-2xl">
-                                        👤
-                                    </div>
-                                )}
-                            </div>
-                            <div>
-                                <p className="font-semibold text-white">
-                                    {follower.name}
-                                </p>
-                                <p className="text-gray-400 text-sm">
-                                    @{follower.username}
-                                </p>
-                            </div>
-                        </Link>
-                    ))}
+            <Head title={`Followers - ${user?.name}`} />
+
+            <div className="py-6">
+                <div className="max-w-5xl mx-auto sm:px-6 lg:px-8">
+                    <div className="mb-6">
+                        <GoBack />
+                        <h2 className="text-2xl font-semibold text-gray-200 mt-4">
+                            Followers{" "}
+                            <span className="text-gray-400 text-lg font-normal">
+                                ({user?.followers_count ?? list.length})
+                            </span>
+                        </h2>
+                        <p className="text-gray-400 text-sm mt-1">
+                            Orang yang mengikuti @{user?.username}
+                        </p>
+                    </div>
+
+                    {hasData ? (
+                        <div className="space-y-3">
+                            {list.map((follower) => (
+                                <UserListItem
+                                    key={follower.id}
+                                    user={follower}
+                                    type="followers"
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-16 text-gray-500 bg-[#1E2937] rounded-2xl border border-gray-700">
+                            Belum ada followers.
+                        </div>
+                    )}
+
+                    {/* Pagination sederhana (prev / next) */}
+                    {followers?.links && (
+                        <div className="mt-6 flex justify-center gap-3">
+                            {followers.links.prev && (
+                                <Link
+                                    href={followers.links.prev}
+                                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm"
+                                    preserveScroll
+                                >
+                                    ← Previous
+                                </Link>
+                            )}
+                            {followers.links.next && (
+                                <Link
+                                    href={followers.links.next}
+                                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm"
+                                    preserveScroll
+                                >
+                                    Next →
+                                </Link>
+                            )}
+                        </div>
+                    )}
                 </div>
-            ) : (
-                <div className="text-center py-16 text-gray-500">
-                    Belum ada followers.
-                </div>
-            )}
+            </div>
         </AuthenticatedLayout>
     );
 }

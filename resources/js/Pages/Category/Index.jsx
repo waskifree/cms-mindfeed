@@ -1,82 +1,118 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/react";
-import { usePage, Link, router } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 
 export default function Index() {
-    const { categories = [], flash, auth } = usePage().props;
+    const { categories = [], flash } = usePage().props;
+
     const handleDelete = (slug) => {
-        if (confirm("Are you sure you want to delete this category?")) {
+        if (confirm("Yakin ingin menghapus kategori ini?")) {
             router.delete(route("category.destroy", slug));
         }
     };
+
     return (
         <AuthenticatedLayout>
             <Head title="Daftar Category" />
 
             <div className="py-6">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold text-gray-800">
-                            All Categories
-                        </h2>
+                <div className="max-w-5xl mx-auto sm:px-6 lg:px-8">
+                    {/* Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+                        <div>
+                            <h2 className="text-2xl font-bold text-white">
+                                All Categories
+                            </h2>
+                            <p className="text-gray-400 text-sm mt-1">
+                                Kelola kategori konten
+                            </p>
+                        </div>
 
                         <Link
                             href={route("category.create")}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition"
+                            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition"
                         >
-                            + Create New Category
+                            <Plus size={18} />
+                            Create Category
                         </Link>
                     </div>
 
+                    {/* Flash */}
                     {flash?.success && (
-                        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                        <div className="mb-6 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-3 rounded-xl">
                             {flash.success}
                         </div>
                     )}
 
-                    <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        nama kategori
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {categories.map((category) => (
-                                    <tr key={category.slug}>
-                                        <td className="px-6 py-4">
-                                            <div className="font-medium text-gray-900">
-                                                {category.name}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 space-x-4">
-                                            <Link
-                                                href={route(
-                                                    "category.edit",
-                                                    category.slug,
-                                                )}
-                                                className="text-indigo-600 hover:text-indigo-900"
-                                            >
-                                                Edit
-                                            </Link>
-                                            <button
-                                                onClick={() =>
-                                                    handleDelete(category.slug)
-                                                }
-                                                className="text-red-600 hover:text-red-900"
-                                            >
-                                                Hapus
-                                            </button>
-                                        </td>
+                    {/* Table */}
+                    <div className="bg-[#1E2937] border border-gray-700 rounded-2xl overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-700">
+                                <thead className="bg-[#0f172a]">
+                                    <tr>
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                            Nama Kategori
+                                        </th>
+                                        <th className="px-6 py-4 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                            Aksi
+                                        </th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+
+                                <tbody className="divide-y divide-gray-700">
+                                    {categories.length > 0 ? (
+                                        categories.map((category) => (
+                                            <tr
+                                                key={category.slug}
+                                                className="hover:bg-slate-800/50 transition"
+                                            >
+                                                <td className="px-6 py-4">
+                                                    <span className="font-medium text-white">
+                                                        {category.name}
+                                                    </span>
+                                                </td>
+
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center justify-center gap-3">
+                                                        <Link
+                                                            href={route(
+                                                                "category.edit",
+                                                                category.slug,
+                                                            )}
+                                                            className="p-2 rounded-lg text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition"
+                                                            title="Edit"
+                                                        >
+                                                            <Pencil size={18} />
+                                                        </Link>
+
+                                                        <button
+                                                            onClick={() =>
+                                                                handleDelete(
+                                                                    category.slug,
+                                                                )
+                                                            }
+                                                            className="p-2 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition"
+                                                            title="Hapus"
+                                                        >
+                                                            <Trash2 size={18} />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td
+                                                colSpan="2"
+                                                className="px-6 py-16 text-center text-gray-500"
+                                            >
+                                                Belum ada kategori.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
